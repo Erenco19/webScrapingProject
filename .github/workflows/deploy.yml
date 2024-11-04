@@ -1,0 +1,26 @@
+name: Deploy to Kubernetes
+
+on:
+  push:
+    branches:
+      - main  # Adjust if your default branch is different
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up kubectl
+      uses: azure/setup-kubectl@v1
+      with:
+        version: 'latest'
+
+    - name: Set up Kubernetes context
+      run: |
+        echo "${{ secrets.KUBE_CONFIG }}" > kubeconfig.yaml
+        export KUBECONFIG=$(pwd)/kubeconfig.yaml
+
+    - name: Apply Kubernetes manifest
+      run: kubectl apply -f .github/workflows/python-app.yml
