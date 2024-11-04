@@ -3,7 +3,7 @@ name: Deploy to Kubernetes
 on:
   push:
     branches:
-      - main  # Adjust if your default branch is different
+      - main  # Adjust as needed
 
 jobs:
   deploy:
@@ -17,10 +17,20 @@ jobs:
       with:
         version: 'latest'
 
-    - name: Set up Kubernetes context
+    - name: Configure kubeconfig
       run: |
         echo "${{ secrets.KUBE_CONFIG }}" > kubeconfig.yaml
         export KUBECONFIG=$(pwd)/kubeconfig.yaml
+        kubectl config set-context --current --namespace=default  # Adjust if needed
 
     - name: Apply Kubernetes manifest
-      run: kubectl apply -f .github/workflows/python-app.yml
+      run: |
+        kubectl apply -f path/to/your-cronjob-file.yaml
+      env:  # Passing the secrets as environment variables to the container
+        GMAIL_SENDER_EMAIL: ${{ secrets.GMAIL_SENDER_EMAIL }}
+        GMAIL_RECEIVER_EMAIL: ${{ secrets.GMAIL_RECEIVER_EMAIL }}
+        GMAIL_RECEIVER_EMAIL_2: ${{ secrets.GMAIL_RECEIVER_EMAIL_2 }}
+        GMAIL_RECEIVER_EMAIL_3: ${{ secrets.GMAIL_RECEIVER_EMAIL_3 }}
+        GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+        HAFELE_ONLINE_USERNAME: ${{ secrets.HAFELE_ONLINE_USERNAME }}
+        HAFELE_ONLINE_PASSWORD: ${{ secrets.HAFELE_ONLINE_PASSWORD }}
